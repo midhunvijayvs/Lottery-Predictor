@@ -62,12 +62,12 @@ def openSettingsWindow():
    
    
    var = IntVar()
-   R1 = Radiobutton(settingsWindow, text="Option 1", variable=var, value=1,command=radioSelected)
+   R1 = Radiobutton(settingsWindow, text="Full result Analize", variable=var, value=1,command=radioSelected)
    R1.pack( anchor = settingsWindow )
-   R2 = Radiobutton(settingsWindow, text="Option 2", variable=var, value=2, command=radioSelected)
+   R2 = Radiobutton(settingsWindow, text="4th Prize Analize", variable=var, value=2, command=radioSelected)
    R2.pack( anchor = settingsWindow )
 
-   R3 = Radiobutton(settingsWindow, text="Option 3", variable=var, value=3,command=radioSelected)
+   R3 = Radiobutton(settingsWindow, text="5th Price Analize", variable=var, value=3,command=radioSelected)
    R3.pack( anchor = settingsWindow)
    
    label = Label(settingsWindow)
