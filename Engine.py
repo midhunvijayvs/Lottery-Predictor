@@ -51,38 +51,6 @@ class Extract:
                 
                 return A
 
-        
-        def filter3rdPrize(A):
-                R=[]
-                for i in range(2,14):
-                    R.append(A[i])
-                return R
-        def filter4thPrize(A):
-                R=[]
-                for i in range(2,14):
-                    R.append(A[i])
-                return R
-        def filter5thPrize(A):
-                R=[]
-                for i in range(2,14):
-                    R.append(A[i])
-                return R
-        def filter6thPrize(A):
-                R=[]
-                for i in range(2,14):
-                    R.append(A[i])
-                return R
-        def filter7thPrize(A):
-                R=[]
-                for i in range(2,14):
-                    R.append(A[i])
-                return R
-        def filter8thPrize(A):
-                R=[]
-                for i in range(2,14):
-                    R.append(A[i])
-                return R
-
 
 class Analise:
 
@@ -108,7 +76,8 @@ class Analise:
                 digit1=dig1
                 digit2=dig2
                 digit3=dig3
-                
+                print("Digit0 inside function:")
+                print(digit0)
         
 
                 

@@ -28,11 +28,6 @@ array=Extract.splitToIntArray(extractedText)
 conditionedArray=Extract.conditionArray(array)
 FDN=sixToFour(conditionedArray) #FDN=Four Digit Numbers Array
 
-ThirdPrize=Extract.filter3rdPrize(FDN)
-print("3rd Price:")
-print(ThirdPrize)
-
-
 Analise1=Analise(FDN)
 
 Result=(Analise1.result())
