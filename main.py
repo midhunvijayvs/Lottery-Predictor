@@ -2,7 +2,7 @@ from Engine import  Extract
 from Engine import Analise
 
 
-# To convert 6 digit numbers to four digit numbers
+# To convert 6-digit numbers to four-digit numbers
 def sixToFour(A):
         N=[]
         for i in range(0,len(A)):
