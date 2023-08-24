@@ -4,7 +4,7 @@ import tkinter.messagebox
 from tkinter import *
 from PIL import Image
 from PIL import ImageTk
-
+#
 mainWindow = tkinter.Tk()
 mainWindow.geometry("600x400")
 mainWindow.title("Lottery Analizer")
