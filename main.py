@@ -1,7 +1,6 @@
 from Engine import  Extract
 from Engine import Analise
 
-
 # To convert 6-digit numbers to four-digit numbers
 def sixToFour(A):
         N=[]
@@ -17,7 +16,17 @@ def sixToFour(A):
         return N
         
 
+def find_largest_index(arr):
+    if not arr:
+        return -1  # Return -1 if the array is empty
 
+    largest_index = 0
+
+    for i in range(1, len(arr)):
+        if arr[i] > arr[largest_index]:
+            largest_index = i
+
+    return largest_index
 
 
 extractedText=""
@@ -36,15 +45,10 @@ Dig1Result=Result[1]
 Dig2Result=Result[2]
 Dig3Result=Result[3]
 
-print("Result As Tuple:")
-print(Result)
-print("Result seperated")
-print(Dig0Result)
-print(Dig1Result)
-print(Dig2Result)
-print(Dig3Result)
-
 index=["-0-","-1-","-2-","-3-","-4-","-5-","-6-","-7-","-8-","-9-"]
+
+
+MostRepeated=[find_largest_index(Dig3Result),find_largest_index(Dig2Result),find_largest_index(Dig1Result),find_largest_index(Dig0Result)]
 
 
 

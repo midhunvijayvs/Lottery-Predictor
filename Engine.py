@@ -14,7 +14,7 @@ class Extract:
         with fitz.open(filename) as doc:
             text = ""
             for page in doc:
-                text += page.getText()
+                text += page.get_text()
 
         return text
 
@@ -100,6 +100,9 @@ class Analise:
             elif digitArray[i] == 9:
                 result[9] += 1
         return result
+
+
+
 
     def __init__(self, array):
         global D0Result
