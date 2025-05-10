@@ -12,7 +12,7 @@ mainWindow.title("Lottery Analizer")
 mainWindow.configure(bg='#222222')
 
 
-image1 = Image.open("D:\Midhun\Lottery Analiser-python/image.png")
+image1 = Image.open("D:/Midhun/Lottery Analiser-python/image.png")
 #image1 = img.resize((50, 50), Image.ANTIALIAS)
 test = ImageTk.PhotoImage(image1)
 

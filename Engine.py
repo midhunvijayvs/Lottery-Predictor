@@ -13,7 +13,7 @@ class Extract:
                 with fitz.open(filename) as doc:
                         text = ""
                         for page in doc:
-                                text += page.getText()
+                                text += page.get_text()
 
                 return text
 
