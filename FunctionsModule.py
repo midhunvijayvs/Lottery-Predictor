@@ -198,10 +198,8 @@ def extractTextFromFile(filename):
     Extracts text from a PDF file using PyMuPDF or PyPDF2 based on the platform.
     """
     if get_platform() == "Windows":
-        print_to_screen("Platform detected: Windows. \n Using PyMuPDF for PDF extraction.")
         return extractTextFromFileUsngPyMuPDF(filename)
     elif get_platform() == "Android":
-        print_to_screen("Platform detected: Android. \n Using PyPDF2 for PDF extraction.")
         return extractTextFromFileUsngPyPDF2(filename)
     else:
         print_to_screen("Unsupported platform for PDF extraction.")
@@ -240,11 +238,20 @@ def sixToFour(A):
             N.append(d4)
         else:
                 N.append(A[i])
-    print_to_screen("Extracted 4 digit numbers from all the pdf files:")
+    print_to_screen("\n\nExtracted 4 digit numbers from all the pdf files:")
     print_to_screen("------------------------------------------")
+    print_new_line()
 
     print_to_screen(N)
-    print_to_screen("Total numbers in the above list: "+str(len(N)))
+    
+    print_new_line()
+    print_to_screen(f" \n Collected all 4 digit numbers!!\n")
+    print_new_line()
+    
+    print_to_screen("Total number of numbers in the above list: "+str(len(N)))
+    print_new_line()
+    print_to_screen("------------------------------------------------------------------------------")
+    
     print_new_line()
     print_new_line()
     return N
@@ -303,7 +310,7 @@ def count(digitArray):
 
 
 def analyze(array):
- 
+    print_to_screen("  \n\nAnalyzing the data.... \n")
     digit0,digit1,digit2,digit3=unpack(array)
     D0Result=count(digit0)
     D1Result=count(digit1)
