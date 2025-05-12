@@ -52,13 +52,19 @@ labelForImage.image = test
 # Position image
 labelForImage.place(x=0, y=0)
 
-outputScrollScreen = tkinter.Scrollbar(mainWindow)
-outputScrollScreen.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+outputScrollBar = tkinter.Scrollbar(mainWindow)
 T = tkinter.Text(mainWindow, height=4, width=90)
-T.pack(side=tkinter.RIGHT, fill=tkinter.Y)
-outputScrollScreen.config(command=T.yview)
 
-T.config(yscrollcommand=outputScrollScreen.set)
+if platform_type == "Android":
+    # Scrollbar still vertical but placed at bottom
+    T.place(x=20, y=800, width=1300, height=1000)
+    outputScrollBar.place(x=1320, y=800, height=1000)
+else:
+    T.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+    outputScrollBar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+
+outputScrollBar.config(command=T.yview)
+T.config(yscrollcommand=outputScrollBar.set)
 T.configure(bg='#000000', fg='#00ff00', padx=50, pady=50)
 
 # function to print any text to the ouput screen
@@ -66,6 +72,7 @@ def add_text_to_output_screen(text):
     T.insert(tkinter.END, "\n")
     T.insert(tkinter.END, text)
     T.see(tkinter.END)  #Without T.see(tkinter.END), if the user has scrolled up in the Text widget, they might miss new content being added at the bottom. This command keeps the view auto-scrolled to the latest entry — useful for logging or real-time output windows.
+    T.update_idletasks()  # <- This forces the UI to update immediately . So that output will be seen as updating in real time.
 
 def clear_output_screen():
       T.delete(1.0, tkinter.END)  # Clear the text widget
@@ -78,19 +85,26 @@ set_logger(add_text_to_output_screen,clear_output_screen, add_new_line_to_output
 
 
 
-
+if platform_type == "Windows":
+   add_text_to_output_screen("Platform detected: Windows")
+elif platform_type == "Android":
+   add_text_to_output_screen("Platform detected: Android")
 
 
 
 
 def update_pdf_files():
-   delete_all_pdfs()
-   downloadPDF(7,74890)
-  
-   downloadReport=verifyPDFs()
-   add_text_to_output_screen("Report of PDF files:")
-   add_text_to_output_screen(downloadReport)
-   #tkinter.messagebox.showinfo("Download Report", downloadReport)
+    try:
+        count = int(file_count_entry.get())
+        start_serial = int(serial_entry.get())
+    except ValueError:
+        add_text_to_output_screen("Input Error!! Please enter valid numbers.")
+        return
+
+    delete_all_pdfs()
+    downloadPDF(count, start_serial)
+    verifyPDFs()
+   
  
  
  
@@ -174,17 +188,34 @@ def openSettingsWindow():
    R2.pack(anchor = settingsWindow)
    R3 = Radiobutton(settingsWindow, text="5th Prize Analyze", variable=var, value=3, command=radioSelected)
    R3.pack(anchor = settingsWindow)
-   
+
+
+
+# Entry for number of files to download
+tkinter.Label(mainWindow, text="No. of Files:", bg='#222222', fg='white').place(x=20, y=230)
+file_count_entry = tkinter.Entry(mainWindow)
+file_count_entry.place(x=400, y=230)
+file_count_entry.insert(0, "7")  # default value
+
+# Entry for starting serial number
+tkinter.Label(mainWindow, text="Start Serial No:", bg='#222222', fg='white').place(x=20, y=300)
+serial_entry = tkinter.Entry(mainWindow)
+serial_entry.place(x=400, y=300)
+serial_entry.insert(0, "74890")  # default value   
+
+
 B1 = tkinter.Button(mainWindow, text ="Update PDF Files", command = update_pdf_files,bg="#ff44aa")
-B1.place(x=270,y=300)
+B1.place(x=20,y=400)
 
 B2 = tkinter.Button(mainWindow, text ="Analyze!", command = analyze_and_show,bg="#ff44aa")
-B2.place(x=370,y=300)
+B2.place(x=600,y=400)
 
 
+B3 = tkinter.Button(mainWindow, text ="Clear Screen", command = clear_output_screen,bg="#ff44aa")
+B3.place(x=20,y=550)
 
-B3 = tkinter.Button(mainWindow, text ="Settings", command = openSettingsWindow,bg="#666666")
-B3.place(x=470,y=300)
+B4 = tkinter.Button(mainWindow, text ="Settings", command = openSettingsWindow,bg="#666666")
+B4.place(x=600,y=550)
 
 
 mainWindow.mainloop()

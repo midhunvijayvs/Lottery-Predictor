@@ -4,12 +4,27 @@ import os
 import sys
 import glob
 import requests
-import fitz  # this is pymupdf;  use the command "pip install PyMuPDF" in OS terminal to install this library
-import PyPDF2
 
+#*******************************************************************************
+# Function to get the platform type
+def get_platform():
+    if platform.system() == "Windows":
+        return "Windows"
+    elif "ANDROID_ROOT" in os.environ:
+        return "Android"
+    elif platform.system() == "Linux":
+        return "Linux"
+    else:
+        return "Unknown"
 
+#*******************************************************************************
 
-
+platform_type = get_platform()
+if platform_type == "Windows":
+    import fitz  # this is pymupdf;  use the command "pip install PyMuPDF" in OS terminal to install this library
+elif platform_type == "Android":
+    import PyPDF2
+    
 print_to_screen = print  # Default fallback to print
 clear_screen = lambda: os.system('cls' if os.name == 'nt' else 'clear')  # Default fallback to Clear screen function
 print_new_line = lambda: print("\n")  # Default fallback to print new line function
@@ -25,33 +40,52 @@ def set_logger(add_text_to_output_screen, clear_output_screen, add_new_line_to_o
 #*******************************************************************************
 #following are the functions for downloading the pdf files
 def delete_all_pdfs(folder="pdf-downloads"):
+    print_to_screen("Deleting all PDF files...")
+    print_new_line()
+    print_new_line()
+    
     if not os.path.exists(folder):
         print_to_screen(f"Folder '{folder}' does not exist.")
+        print_new_line()
         return
 
     pdf_files = glob.glob(os.path.join(folder, "*.pdf"))
 
     if not pdf_files:
         print_to_screen("No PDF files found to delete.")
+        print_new_line()
         return
 
     for file_path in pdf_files:
         try:
             os.remove(file_path)
             print_to_screen(f"Deleted: {file_path}")
+            print_new_line()
+            
         except Exception as e:
             print_to_screen(f"Error deleting {file_path}: {e}")
-
+            print_new_line()
+            
+    print_new_line()
     print_to_screen("All PDF files deleted.")
+    print_new_line()
+    print_new_line()
     
     
 def downloadPDF(noOfFilesToDownload, startingSerialNumber):
     folder = "pdf-downloads"
     os.makedirs(folder, exist_ok=True)
 
+    print_new_line()
+    print_to_screen("Downloading PDF files...")
+    print_to_screen("------------------------------------------")
+    print_new_line()
+    
     for i in range(1, noOfFilesToDownload + 1):  # Starting from 1
         url = f"https://result.keralalotteries.com/viewlotisresult.php?drawserial={startingSerialNumber + i - 1}"
         print_to_screen(f"Downloading from: {url}")
+        print_new_line()
+        
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
@@ -59,19 +93,29 @@ def downloadPDF(noOfFilesToDownload, startingSerialNumber):
 
             if "application/pdf" not in content_type:
                 print_to_screen(f"Skipped {i}: Not a PDF file.")
+                print_new_line()
+                print_new_line()
+            
                 continue
 
             file_path = os.path.join(folder, f"{i}.pdf")  # Saving as 1.pdf, 2.pdf, etc.
             with open(file_path, 'wb') as pdf:
                 pdf.write(response.content)
             print_to_screen(f"Saved to {file_path}")
+            print_new_line()
+            print_new_line()
+                    
         except Exception as e:
             print_to_screen(f"Error downloading {i}: {e}")
 
-    print_to_screen("Download complete.")
+    print_to_screen("All PDF Downloads completed!!")
+    print_new_line()
+    print_new_line()
 
 
 def verifyPDFs(folder="pdf-downloads"):
+    print_to_screen("Verifying PDF files...")
+    print_new_line()
     pdf_files = glob.glob(os.path.join(folder, "*.pdf"))
     deleted = []
     kept = []
@@ -84,19 +128,22 @@ def verifyPDFs(folder="pdf-downloads"):
             kept.append(os.path.basename(file))
 
     report = (
-        f"✅ Verified PDF files in '{folder}':\n\n"
-        f"📁 Total files scanned: {len(pdf_files)}\n"
-        f"🗑️  Deleted empty files: {len(deleted)}\n"
-        f"📌 Valid files kept: {len(kept)}\n"
+        "Verification Report\n"
+        "--------------------\n"
+        f"\n Verified PDF files in '{folder}':\n\n"
+        f">>> Total files scanned: {len(pdf_files)}\n"
+        f">>> Deleted empty files: {len(deleted)}\n"
+        f">>> Valid files kept: {len(kept)}\n"
     )
 
     if deleted:
-        report += "\n🗑️ Deleted Files:\n" + "\n".join(deleted)
+        report += "\n>>> Deleted Files:\n" + "\n".join(deleted)
 
     if kept:
-        report += "\n\n📌 Valid Files:\n" + "\n".join(kept)
-
-    return report
+        report += "\n\n>>> Valid Files:\n\n" + "\n".join(kept)
+    print_new_line()
+    print_to_screen(report)
+    print_new_line()
 
 
 #*******************************************************************************
@@ -151,8 +198,10 @@ def extractTextFromFile(filename):
     Extracts text from a PDF file using PyMuPDF or PyPDF2 based on the platform.
     """
     if get_platform() == "Windows":
+        print_to_screen("Platform detected: Windows. \n Using PyMuPDF for PDF extraction.")
         return extractTextFromFileUsngPyMuPDF(filename)
     elif get_platform() == "Android":
+        print_to_screen("Platform detected: Android. \n Using PyPDF2 for PDF extraction.")
         return extractTextFromFileUsngPyPDF2(filename)
     else:
         print_to_screen("Unsupported platform for PDF extraction.")
@@ -192,6 +241,8 @@ def sixToFour(A):
         else:
                 N.append(A[i])
     print_to_screen("Extracted 4 digit numbers from all the pdf files:")
+    print_to_screen("------------------------------------------")
+
     print_to_screen(N)
     print_to_screen("Total numbers in the above list: "+str(len(N)))
     print_new_line()
@@ -310,12 +361,3 @@ def find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Res
 
 #**********************other functions***********************
 
-def get_platform():
-    if platform.system() == "Windows":
-        return "Windows"
-    elif "ANDROID_ROOT" in os.environ:
-        return "Android"
-    elif platform.system() == "Linux":
-        return "Linux"
-    else:
-        return "Unknown"
