@@ -1,8 +1,9 @@
 # Import libraries
+import platform
 import os
+import sys
 import glob
 import requests
-from bs4 import BeautifulSoup
 import fitz  # this is pymupdf;  use the command "pip install PyMuPDF" in OS terminal to install this library
 
 
@@ -198,7 +199,7 @@ def count(digitArray):
 
 
 
-def analize(array):
+def analyze(array):
  
     digit0,digit1,digit2,digit3=unpack(array)
     D0Result=count(digit0)
@@ -252,3 +253,17 @@ def find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Res
         second_most = sorted_counts[1][0] if len(sorted_counts) > 1 else -1  # -1 if not available
         result.append(second_most)
     return result
+
+
+
+#**********************other functions***********************
+
+def get_platform():
+    if platform.system() == "Windows":
+        return "Windows"
+    elif "ANDROID_ROOT" in os.environ:
+        return "Android"
+    elif platform.system() == "Linux":
+        return "Linux"
+    else:
+        return "Unknown"
