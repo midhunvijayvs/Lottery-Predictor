@@ -5,6 +5,7 @@ from tkinter import *
 from PIL import Image
 from PIL import ImageTk
 from FunctionsModule import (
+   set_logger,
    delete_all_pdfs,
     downloadPDF,
     verifyPDFs,
@@ -21,26 +22,16 @@ from FunctionsModule import (
  get_platform
  )
 
+#setting up the UI
 mainWindow = tkinter.Tk()
 mainWindow.geometry("600x400")
 mainWindow.title("Lottery Analyzer")
 mainWindow.configure(bg='#222222')
 
 
-image1 = Image.open("image.png")
-image1 = image1.resize((200, 150), Image.Resampling.LANCZOS)
 
-test = ImageTk.PhotoImage(image1)
-
-label1 = tkinter.Label(image=test)
-label1.image = test
-# Position image
-label1.place(x=0, y=0)
-
-
-
+#making the window fullscreen
 platform_type = get_platform()
-
 if platform_type == "Windows":
     mainWindow.state('zoomed')  # Only works on Windows
 elif platform_type == "Android":
@@ -51,19 +42,67 @@ else:
     print("Platform not recognized:", platform_type)
     
     
-    
+bannerImage = Image.open("image.png")
+bannerImage = bannerImage.resize((200, 150), Image.Resampling.LANCZOS)
+
+test = ImageTk.PhotoImage(bannerImage)
+
+labelForImage = tkinter.Label(image=test)
+labelForImage.image = test
+# Position image
+labelForImage.place(x=0, y=0)
+
+outputScrollScreen = tkinter.Scrollbar(mainWindow)
+outputScrollScreen.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+T = tkinter.Text(mainWindow, height=4, width=90)
+T.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+outputScrollScreen.config(command=T.yview)
+
+T.config(yscrollcommand=outputScrollScreen.set)
+T.configure(bg='#000000', fg='#00ff00', padx=50, pady=50)
+
+# function to print any text to the ouput screen
+def add_text_to_output_screen(text):
+    T.insert(tkinter.END, "\n")
+    T.insert(tkinter.END, text)
+    T.see(tkinter.END)  #Without T.see(tkinter.END), if the user has scrolled up in the Text widget, they might miss new content being added at the bottom. This command keeps the view auto-scrolled to the latest entry — useful for logging or real-time output windows.
+
+def clear_output_screen():
+      T.delete(1.0, tkinter.END)  # Clear the text widget
+      T.insert(tkinter.END, "Screen Cleared\n")  # Optional: Add a message after clearing
+
+def add_new_line_to_output_screen():
+      T.insert(tkinter.END, "\n")
+      T.see(tkinter.END)  # Scroll to the end after adding a new line     
+set_logger(add_text_to_output_screen,clear_output_screen, add_new_line_to_output_screen)  # Set the logger once  to print to the screen, from the FunctionsModule.py file too
+
+
+
+
+
+
+
 
 def update_pdf_files():
    delete_all_pdfs()
-   downloadPDF(7,74897)
+   downloadPDF(7,74890)
   
    downloadReport=verifyPDFs()
-   print("Report of PDF files:")
-   print(downloadReport)
-   tkinter.messagebox.showinfo("Download Report", downloadReport)
+   add_text_to_output_screen("Report of PDF files:")
+   add_text_to_output_screen(downloadReport)
+   #tkinter.messagebox.showinfo("Download Report", downloadReport)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
    
 def analyze_and_show():
-   
+   #clear_output_screen() 
    extractedText=""
    
    for i in range(1,7):
@@ -76,47 +115,43 @@ def analyze_and_show():
 
    Dig0Result, Dig1Result, Dig2Result, Dig3Result=analyze(FDN)
 
-  
-  
-   print("Result seperated")
-   print(Dig0Result)
-   print(Dig1Result)
-   print(Dig2Result)
-   print(Dig3Result)
+    
+   add_text_to_output_screen("Row Result")
+   add_text_to_output_screen(Dig0Result)
+   add_text_to_output_screen(Dig1Result)
+   add_text_to_output_screen(Dig2Result)
+   add_text_to_output_screen(Dig3Result)
+   add_new_line_to_output_screen()
+   add_new_line_to_output_screen()
    
    formattedResultToDisplay= format_result_for_display(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
    mostRepeatedDigits=find_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
    secondMostRepeatedDigits=find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
    
    
-   S = tkinter.Scrollbar(mainWindow)
-   T = tkinter.Text(mainWindow, height=4, width=90)
-   S.pack(side=tkinter.RIGHT, fill=tkinter.Y)
-   T.pack(side=tkinter.RIGHT, fill=tkinter.Y)
    
-   S.config(command=T.yview)
-   T.config(yscrollcommand=S.set)
-   T.configure(bg='#000000')
-   T.configure(fg='#00ff00')
-   T.configure(padx=50)
-   T.configure(pady=50)
-   
-   T.delete("1.0", tkinter.END)
+  
 
-   # Insert formatted rows
+   # show formatted final result
+   add_text_to_output_screen("Final Result: ")
+   add_text_to_output_screen("--------------------------------------------------")
    for row in formattedResultToDisplay:
-      T.insert(tkinter.END, row)
-      T.insert(tkinter.END, "\n")
+      add_text_to_output_screen(row)
 
-   # Insert most repeated digits
-   T.insert(tkinter.END, "\nMost Repeated Digits: ")
-   T.insert(tkinter.END, mostRepeatedDigits)
-   T.insert(tkinter.END, "\n\nSecond Most Repeated Digits: ")
-   T.insert(tkinter.END, secondMostRepeatedDigits)
-   T.insert(tkinter.END, "\n")
+   add_new_line_to_output_screen()
+   add_text_to_output_screen("--------------------------------------------------")
+   add_new_line_to_output_screen()
 
-
-
+   # show most repeated digits
+   add_text_to_output_screen("Most Repeated Digits: ")
+   add_text_to_output_screen(mostRepeatedDigits)
+   add_new_line_to_output_screen()
+   add_text_to_output_screen("--------------------------------------------------")
+   add_new_line_to_output_screen()
+   add_text_to_output_screen("Second Most Repeated Digits: ")
+   add_text_to_output_screen(secondMostRepeatedDigits)
+   add_text_to_output_screen("--------------------------------------------------")
+   
 
 
 

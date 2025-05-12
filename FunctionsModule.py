@@ -5,29 +5,44 @@ import sys
 import glob
 import requests
 import fitz  # this is pymupdf;  use the command "pip install PyMuPDF" in OS terminal to install this library
+import PyPDF2
 
+
+
+
+print_to_screen = print  # Default fallback to print
+clear_screen = lambda: os.system('cls' if os.name == 'nt' else 'clear')  # Default fallback to Clear screen function
+print_new_line = lambda: print("\n")  # Default fallback to print new line function
+def set_logger(add_text_to_output_screen, clear_output_screen, add_new_line_to_output_screen):
+    global print_to_screen
+    global clear_screen
+    global print_new_line
+    print_to_screen = add_text_to_output_screen
+    clear_screen = clear_output_screen
+    print_new_line = add_new_line_to_output_screen
+    
 
 #*******************************************************************************
 #following are the functions for downloading the pdf files
 def delete_all_pdfs(folder="pdf-downloads"):
     if not os.path.exists(folder):
-        print(f"Folder '{folder}' does not exist.")
+        print_to_screen(f"Folder '{folder}' does not exist.")
         return
 
     pdf_files = glob.glob(os.path.join(folder, "*.pdf"))
 
     if not pdf_files:
-        print("No PDF files found to delete.")
+        print_to_screen("No PDF files found to delete.")
         return
 
     for file_path in pdf_files:
         try:
             os.remove(file_path)
-            print(f"Deleted: {file_path}")
+            print_to_screen(f"Deleted: {file_path}")
         except Exception as e:
-            print(f"Error deleting {file_path}: {e}")
+            print_to_screen(f"Error deleting {file_path}: {e}")
 
-    print("All PDF files deleted.")
+    print_to_screen("All PDF files deleted.")
     
     
 def downloadPDF(noOfFilesToDownload, startingSerialNumber):
@@ -36,24 +51,24 @@ def downloadPDF(noOfFilesToDownload, startingSerialNumber):
 
     for i in range(1, noOfFilesToDownload + 1):  # Starting from 1
         url = f"https://result.keralalotteries.com/viewlotisresult.php?drawserial={startingSerialNumber + i - 1}"
-        print(f"Downloading from: {url}")
+        print_to_screen(f"Downloading from: {url}")
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             content_type = response.headers.get("Content-Type", "")
 
             if "application/pdf" not in content_type:
-                print(f"Skipped {i}: Not a PDF file.")
+                print_to_screen(f"Skipped {i}: Not a PDF file.")
                 continue
 
             file_path = os.path.join(folder, f"{i}.pdf")  # Saving as 1.pdf, 2.pdf, etc.
             with open(file_path, 'wb') as pdf:
                 pdf.write(response.content)
-            print(f"Saved to {file_path}")
+            print_to_screen(f"Saved to {file_path}")
         except Exception as e:
-            print(f"Error downloading {i}: {e}")
+            print_to_screen(f"Error downloading {i}: {e}")
 
-    print("Download complete.")
+    print_to_screen("Download complete.")
 
 
 def verifyPDFs(folder="pdf-downloads"):
@@ -94,12 +109,14 @@ def countDigit(n):
     return count
 	
 #to extract text from all the pages of the pdf into a single string
-def extractTextFromFile(filename):
+
+#Using PyMuPDF to extract text from PDF files. work perfectly on windows but not in android..
+def extractTextFromFileUsngPyMuPDF(filename):
     folder = "pdf-downloads"
     full_path = os.path.join(folder, filename)
 
     if not os.path.exists(full_path):
-        print(f"File not found: {full_path}")
+        print_to_screen(f"File not found: {full_path}")
         return ""
 
     with fitz.open(full_path) as doc:
@@ -108,7 +125,39 @@ def extractTextFromFile(filename):
             text += page.get_text()
     return text
 
+# Using PyPDF2 to extract text from PDF files. This works on both Windows and Android.
+# Note: PyPDF2 may not extract text as accurately as PyMuPDF, especially for complex PDFs.Tested and it is counting less digits than pymupdf
 
+def extractTextFromFileUsngPyPDF2(filename):
+    folder = "pdf-downloads"
+    full_path = os.path.join(folder, filename)
+
+    if not os.path.exists(full_path):
+        print_to_screen(f"File not found: {full_path}")
+        return ""
+
+    text = ""
+    with open(full_path, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+    return text
+
+
+def extractTextFromFile(filename):
+    """
+    Extracts text from a PDF file using PyMuPDF or PyPDF2 based on the platform.
+    """
+    if get_platform() == "Windows":
+        return extractTextFromFileUsngPyMuPDF(filename)
+    elif get_platform() == "Android":
+        return extractTextFromFileUsngPyPDF2(filename)
+    else:
+        print_to_screen("Unsupported platform for PDF extraction.")
+        return ""
+    
 #to split the string to list of words and to filter them to int values only
 def splitToIntArray(s):
     numbers = []
@@ -138,12 +187,15 @@ def sixToFour(A):
     for i in range(0,len(A)):
         if countDigit(A[i])==6:
             d4=A[i]%10000
-            #print(d4)
+            #print_to_screen(d4)
             N.append(d4)
         else:
                 N.append(A[i])
-    print("Six to Four Result:")
-    print (N)
+    print_to_screen("Extracted 4 digit numbers from all the pdf files:")
+    print_to_screen(N)
+    print_to_screen("Total numbers in the above list: "+str(len(N)))
+    print_new_line()
+    print_new_line()
     return N
         
 
