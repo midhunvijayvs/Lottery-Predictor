@@ -4,7 +4,7 @@ import os
 import sys
 import glob
 import requests
-
+from itertools import product
 #*******************************************************************************
 # Function to get the platform type
 def get_platform():
@@ -364,7 +364,22 @@ def find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Res
         result.append(second_most)
     return result
 
+def generate_positional_combinations(list1, list2):
+    if len(list1) != 4 or len(list2) != 4:
+        raise ValueError("Both lists must contain exactly 4 digits.")
 
+    # Ensure all elements are strings
+    list1 = [str(d) for d in list1]
+    list2 = [str(d) for d in list2]
+
+    # Combine options at each digit position
+    digit_choices = [[list1[i], list2[i]] for i in range(4)]
+
+    # Generate all combinations
+    all_combinations = product(*digit_choices)
+
+    # Join each tuple of digits into a string
+    return [''.join(combo) for combo in all_combinations]
 
 #**********************other functions***********************
 

@@ -19,6 +19,7 @@ from FunctionsModule import (
  format_result_for_display,
  find_most_frequent_digits,
  find_second_most_frequent_digits,
+ generate_positional_combinations,
  get_platform
  )
 
@@ -173,6 +174,13 @@ def analyze_and_show():
    add_text_to_output_screen(secondMostRepeatedDigits)
    add_text_to_output_screen("--------------------------------------------------")
    
+   #Show positional combinations of the most repeated digits
+   add_new_line_to_output_screen()
+   add_text_to_output_screen("Positional Combinations: ")
+   add_text_to_output_screen("--------------------------------------------------")
+   positionalCombinations=generate_positional_combinations(mostRepeatedDigits, secondMostRepeatedDigits)
+   
+   add_text_to_output_screen(positionalCombinations)
 
 
 #function to open the settings window
