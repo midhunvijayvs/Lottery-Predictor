@@ -9,9 +9,10 @@ from FunctionsModule import (
    delete_all_pdfs,
     downloadPDF,
     verifyPDFs,
+    
     extractTextFromFile,
-    splitToIntArray,
-    conditionArray,
+    split_to_words_and_filter_numbers,
+    filter_4_digit_numbers,
     sixToFour,
     unpack,
     count,
@@ -117,25 +118,60 @@ def analyze_and_show():
       add_text_to_output_screen("Platform detected: Windows, Using PyMuPDF for PDF extraction")
    elif platform_type == "Android":
       add_text_to_output_screen("Platform detected: Android, Using PyPDF2 for PDF extraction")   
-         
-   for i in range(1,7):
+   
+   
+   try:
+        count = int(file_count_entry.get())
+        
+   except ValueError:
+        add_text_to_output_screen("Input Error!! Please enter valid numbers.")
+        return
+      
+   for i in range(1,count+1):
       add_text_to_output_screen(f" \n extracting data from PDF file {i}.pdf.....\n")
       
       text=(extractTextFromFile(str(i)+".pdf"))
       extractedText+=text
    
-   add_text_to_output_screen(f" \n Data extraction Completed!!\n")
+   add_text_to_output_screen(f" \n Data extraction Completed!!\n\n")
+   
+   add_text_to_output_screen(f" \n Splitting the text data into words and filtering numbers....\n")
+   numbers_array=split_to_words_and_filter_numbers(extractedText)
+   add_new_line_to_output_screen()
+   add_text_to_output_screen(f" \n Data Splitting and filtering completed!!\n")
+   add_text_to_output_screen(f"  The result number word array is\n\n{numbers_array}\n\n")
    
    add_text_to_output_screen(f" \n Collecting 4 digit numbers from the data....\n")
-   
-   array=splitToIntArray(extractedText)
-   conditionedArray=conditionArray(array)
-   FDN=sixToFour(conditionedArray) #FDN=Four Digit Numbers Array
 
+   four_digit_numbers=filter_4_digit_numbers(numbers_array)
+   
+   #FDN=sixToFour(four_digit_numbers) #FDN=Four Digit Numbers Array
+   
+   add_text_to_output_screen("\n\nExtracted 4 digit numbers from all the pdf files:")
+   add_text_to_output_screen("------------------------------------------")
+   add_new_line_to_output_screen()
+
+   add_text_to_output_screen(four_digit_numbers)
+    
+   add_new_line_to_output_screen()
+   add_text_to_output_screen(f" \n Collected all 4 digit numbers!!\n")
+   add_new_line_to_output_screen()
+    
+   add_text_to_output_screen("Total number of numbers in the above list: "+str(len(four_digit_numbers)))
+   add_new_line_to_output_screen()
+   add_text_to_output_screen(f"Total number of pdf files:{count} ")
+   add_text_to_output_screen(f"Expected number of 4 digit results per files: 606")
+   add_text_to_output_screen(f"Total number of expected 4 digit results :{count} x 606 = {count*606}")
+   add_new_line_to_output_screen()
+   add_text_to_output_screen("------------------------------------------------------------------------------")
+    
+   add_new_line_to_output_screen()
+   add_new_line_to_output_screen() 
+    
    
    
 
-   Dig0Result, Dig1Result, Dig2Result, Dig3Result=analyze(FDN)
+   Dig0Result, Dig1Result, Dig2Result, Dig3Result=analyze(four_digit_numbers)
 
     
    add_text_to_output_screen("Row Result")

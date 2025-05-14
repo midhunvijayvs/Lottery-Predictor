@@ -206,14 +206,14 @@ def extractTextFromFile(filename):
         return ""
     
 #to split the string to list of words and to filter them to int values only
-def splitToIntArray(s):
+def split_to_words_and_filter_numbers(s):
     numbers = []
 
     for word in s.split():   
 
             if word.isdigit():
 
-                    numbers.append(int(word))
+                    numbers.append(word)
     return numbers
 
         #to remove consolidation prize repitation
@@ -222,10 +222,8 @@ def splitToIntArray(s):
 
 #removing some unwanted values
 #and the first 12 items
-def conditionArray(A):
-    A = A[12:]  # remove first 12 items
-    A = [v for v in A if v not in {1, 2, 3, 30}]
-    return A
+def filter_4_digit_numbers(list):
+     return [word for word in list if len(word) == 4]
 
 
 
@@ -238,22 +236,7 @@ def sixToFour(A):
             N.append(d4)
         else:
                 N.append(A[i])
-    print_to_screen("\n\nExtracted 4 digit numbers from all the pdf files:")
-    print_to_screen("------------------------------------------")
-    print_new_line()
-
-    print_to_screen(N)
     
-    print_new_line()
-    print_to_screen(f" \n Collected all 4 digit numbers!!\n")
-    print_new_line()
-    
-    print_to_screen("Total number of numbers in the above list: "+str(len(N)))
-    print_new_line()
-    print_to_screen("------------------------------------------------------------------------------")
-    
-    print_new_line()
-    print_new_line()
     return N
         
 
@@ -269,7 +252,7 @@ def unpack(a):
     dig0=[]
 
     for y in range(0,len(a)):
-            temp=a[y]
+            temp = int(a[y])
             dig0.append(temp%10)
             temp=int(temp/10)
             dig1.append(temp%10)
@@ -311,6 +294,7 @@ def count(digitArray):
 
 def analyze(array):
     print_to_screen("  \n\nAnalyzing the data.... \n")
+    
     digit0,digit1,digit2,digit3=unpack(array)
     D0Result=count(digit0)
     D1Result=count(digit1)
