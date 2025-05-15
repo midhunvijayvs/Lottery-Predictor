@@ -71,7 +71,7 @@ link = tkinter.Label(mainWindow,
                 text=">>> Goto Kerala Lottery Result official page",
                 fg="blue",
                 cursor="hand2",
-                font=("Segoe UI", 10, "underline"))
+                font=("Segoe UI", 7, "underline"))
 
 
 
