@@ -59,21 +59,40 @@ label_serial_number.config(text="Start Serial No:", bg='#222222', fg='white')
 serial_number_entry = tkinter.Entry(mainWindow)
 serial_number_entry.insert(0, "74890")  # Default value
 
-B1 = tkinter.Button(mainWindow)
-B2 = tkinter.Button(mainWindow)
-B3 = tkinter.Button(mainWindow)
-B4 = tkinter.Button(mainWindow)
+update_pdf_button = tkinter.Button(mainWindow)
+analyze_button = tkinter.Button(mainWindow)
+show_last_result_button = tkinter.Button(mainWindow)
+clear_screen_button = tkinter.Button(mainWindow)
+settings_button = tkinter.Button(mainWindow)
 
 
 
 
 
 # function to print any text to the ouput screen
-def add_text_to_output_screen(text):
-    outputText.insert(tkinter.END, "\n")
-    outputText.insert(tkinter.END, text)
-    outputText.see(tkinter.END)  #Without outputText.see(tkinter.END), if the user has scrolled up in the Text widget, they might miss new content being added at the bottom. This command keeps the view auto-scrolled to the latest entry — useful for logging or real-time output windows.
-    outputText.update_idletasks()  # <- This forces the UI to update immediately . So that output will be seen as updating in real time.
+def add_text_to_output_screen(text, color="green", bold=False):
+    tag_name = f"{color}_{'bold' if bold else 'normal'}"
+    
+    text_color=""
+    if (color=="red"):
+        text_color="#ff0000"
+    elif (color=="yellow"):
+        text_color="#ffff00"
+
+    else:
+        text_color="#00ff00"
+        
+    font_weight = "bold" if bold else "normal"    
+    
+    # If the tag doesn't exist yet, configure it
+    if not tag_name in outputText.tag_names():
+        
+        outputText.tag_configure(tag_name, foreground=text_color, font=("Arial", 10, font_weight))
+    
+    outputText.insert(tkinter.END, "\n", ())
+    outputText.insert(tkinter.END, text, (tag_name,))
+    outputText.see(tkinter.END)  # Auto-scroll to the bottom
+    outputText.update_idletasks()  # Force UI update
 
 def clear_output_screen():
       outputText.delete(1.0, tkinter.END)  # Clear the text widget
@@ -104,7 +123,65 @@ def update_pdf_files():
  
  
  
- #summary function to update the pdf files
+# function to read row result from file and show the final result in the logger and plot the result
+def show_result():
+    try:
+        with open("last_analysis_report.txt", "r") as f:
+            lines = f.readlines()
+            Dig0Result = eval(lines[0].strip())
+            Dig1Result = eval(lines[1].strip())
+            Dig2Result = eval(lines[2].strip())
+            Dig3Result = eval(lines[3].strip())
+
+        # Now use Dig0Result through Dig3Result as needed
+        show_digit_plots(Dig0Result, Dig1Result, Dig2Result, Dig3Result)
+
+    except Exception as e:
+        add_text_to_output_screen(f"Error loading analysis result from file:, {e}","red",True)
+        return
+        
+    add_text_to_output_screen("Raw Result")
+    add_text_to_output_screen(Dig0Result)
+    add_text_to_output_screen(Dig1Result)
+    add_text_to_output_screen(Dig2Result)
+    add_text_to_output_screen(Dig3Result)
+    add_new_line_to_output_screen()
+    add_new_line_to_output_screen()
+   
+    formattedResultToDisplay= format_result_for_display(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
+    mostRepeatedDigits=find_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
+    secondMostRepeatedDigits=find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
+   
+
+    # show formatted final result
+    add_text_to_output_screen("Final Result: ", color="yellow", bold=True)
+    add_text_to_output_screen("--------------------------------------------------")
+    for row in formattedResultToDisplay:
+       add_text_to_output_screen(row, color="yellow", bold=True)
+
+    add_new_line_to_output_screen()
+    add_text_to_output_screen("--------------------------------------------------")
+    add_new_line_to_output_screen()
+
+    # show most repeated digits
+    add_text_to_output_screen("Most Repeated Digits: ", color="yellow", bold=True)
+    add_text_to_output_screen(mostRepeatedDigits, color="yellow", bold=True)
+    add_new_line_to_output_screen()
+    add_text_to_output_screen("--------------------------------------------------")
+    add_new_line_to_output_screen()
+    add_text_to_output_screen("Second Most Repeated Digits: ", color="yellow", bold=True)
+    add_text_to_output_screen(secondMostRepeatedDigits, color="yellow", bold=True)
+    add_text_to_output_screen("--------------------------------------------------")
+   
+    #Show positional combinations of the most repeated digits
+    add_new_line_to_output_screen()
+    add_text_to_output_screen("Positional Combinations: ", color="yellow", bold=True)
+    add_text_to_output_screen("--------------------------------------------------")
+    positionalCombinations=generate_positional_combinations(mostRepeatedDigits, secondMostRepeatedDigits)
+   
+    add_text_to_output_screen(positionalCombinations, color="yellow", bold=True)
+
+    show_digit_plots(Dig0Result, Dig1Result, Dig2Result, Dig3Result)
 
 
 
@@ -173,55 +250,16 @@ def analyze_and_show():
    
 
    Dig0Result, Dig1Result, Dig2Result, Dig3Result=analyze(four_digit_numbers)
-
+   
+   with open("last_analysis_report.txt", "w") as f:
+    f.write(repr(Dig0Result) + "\n")
+    f.write(repr(Dig1Result) + "\n")
+    f.write(repr(Dig2Result) + "\n")
+    f.write(repr(Dig3Result) + "\n")
     
-   add_text_to_output_screen("Row Result")
-   add_text_to_output_screen(Dig0Result)
-   add_text_to_output_screen(Dig1Result)
-   add_text_to_output_screen(Dig2Result)
-   add_text_to_output_screen(Dig3Result)
-   add_new_line_to_output_screen()
-   add_new_line_to_output_screen()
+   show_result()
+    
    
-   formattedResultToDisplay= format_result_for_display(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
-   mostRepeatedDigits=find_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
-   secondMostRepeatedDigits=find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
-   
-   
-   show_digit_plots(Dig0Result, Dig1Result, Dig2Result, Dig3Result)
-   
-   
-  
-
-   # show formatted final result
-   add_text_to_output_screen("Final Result: ")
-   add_text_to_output_screen("--------------------------------------------------")
-   for row in formattedResultToDisplay:
-      add_text_to_output_screen(row)
-
-   add_new_line_to_output_screen()
-   add_text_to_output_screen("--------------------------------------------------")
-   add_new_line_to_output_screen()
-
-   # show most repeated digits
-   add_text_to_output_screen("Most Repeated Digits: ")
-   add_text_to_output_screen(mostRepeatedDigits)
-   add_new_line_to_output_screen()
-   add_text_to_output_screen("--------------------------------------------------")
-   add_new_line_to_output_screen()
-   add_text_to_output_screen("Second Most Repeated Digits: ")
-   add_text_to_output_screen(secondMostRepeatedDigits)
-   add_text_to_output_screen("--------------------------------------------------")
-   
-   #Show positional combinations of the most repeated digits
-   add_new_line_to_output_screen()
-   add_text_to_output_screen("Positional Combinations: ")
-   add_text_to_output_screen("--------------------------------------------------")
-   positionalCombinations=generate_positional_combinations(mostRepeatedDigits, secondMostRepeatedDigits)
-   
-   add_text_to_output_screen(positionalCombinations)
-
-
 #function to open the settings window
 def openSettingsWindow():
    settingsWindow = Toplevel(mainWindow)
@@ -250,7 +288,7 @@ def openSettingsWindow():
 
 # Setting up the UI based on the platform
 if platform_type == "Windows":
-    add_text_to_output_screen("Platform detected: Windows")
+    add_text_to_output_screen("Platform detected: Windows\n")
    
     mainWindow.state('zoomed')  # Only works on Windows
     bannerImage = bannerImage.resize((400, 150), Image.Resampling.LANCZOS)
@@ -260,10 +298,11 @@ if platform_type == "Windows":
     label_serial_number.place(x=20, y=300)
     serial_number_entry.place(x=400, y=300)
     
-    B1.place(x=20,y=400)
-    B2.place(x=600,y=400)
-    B3.place(x=20,y=550)
-    B4.place(x=600,y=550)
+    update_pdf_button.place(x=20,y=400)
+    analyze_button.place(x=200,y=400)
+    show_last_result_button.place(x=300,y=400)
+    clear_screen_button.place(x=20,y=550)
+    settings_button.place(x=600,y=550)
     
     outputText.pack(side=tkinter.RIGHT, fill=tkinter.Y)
     outputScrollBar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
@@ -271,7 +310,7 @@ if platform_type == "Windows":
     
     
 elif platform_type == "Android":
-    add_text_to_output_screen("Platform detected: Android")
+    add_text_to_output_screen("Platform detected: Android\n")
      
     mainWindow.attributes('-fullscreen', True) #set fullscreen or a fixed size for android
     bannerImage = bannerImage.resize((1350, 400), Image.Resampling.LANCZOS)
@@ -282,10 +321,11 @@ elif platform_type == "Android":
     label_serial_number.place(x=20, y=550)
     serial_number_entry.place(x=400, y=550)
         
-    B1.place(x=20,y=650)
-    B2.place(x=600,y=650)
-    B3.place(x=20,y=800)
-    B4.place(x=600,y=800)
+    update_pdf_button.place(x=20,y=650)
+    analyze_button.place(x=600,y=650)
+    show_last_result_button.place(x=900,y=650)
+    clear_screen_button.place(x=20,y=800)
+    settings_button.place(x=600,y=800)
     
     outputText.place(x=20, y=950, width=1300, height=1000)
     outputScrollBar.place(x=1320, y=950, height=1000)
@@ -304,10 +344,11 @@ labelForImage.place(x=0, y=0)
 
 
 # --- Configure button properties ---
-B1.config(text="Update PDF Files", command=update_pdf_files, bg="#ff44aa")
-B2.config(text="Analyze!", command=analyze_and_show, bg="#ff44aa")
-B3.config(text="Clear Screen", command=clear_output_screen, bg="#ff44aa")
-B4.config(text="Settings", command=openSettingsWindow, bg="#666666")
+update_pdf_button.config(text="Update PDF Files", command=update_pdf_files, bg="#ff44aa")
+analyze_button.config(text="Analyze!", command=analyze_and_show, bg="#ff44aa")
+show_last_result_button.config(text="Show Last Result!", command=show_result, bg="#ff44aa")
+clear_screen_button.config(text="Clear Screen", command=clear_output_screen, bg="#ff44aa")
+settings_button.config(text="Settings", command=openSettingsWindow, bg="#666666")
 
 
 
