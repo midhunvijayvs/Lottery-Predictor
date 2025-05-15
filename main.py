@@ -74,6 +74,8 @@ def add_text_to_output_screen(text, color="green", bold=False):
     tag_name = f"{color}_{'bold' if bold else 'normal'}"
     
     text_color=""
+    font_size=10
+    
     if (color=="red"):
         text_color="#ff0000"
     elif (color=="yellow"):
@@ -84,10 +86,16 @@ def add_text_to_output_screen(text, color="green", bold=False):
         
     font_weight = "bold" if bold else "normal"    
     
+    
+    if platform_type == "Windows":
+      font_size=10
+    elif platform_type == "Android":
+      font_size=7
+      
     # If the tag doesn't exist yet, configure it
     if not tag_name in outputText.tag_names():
         
-        outputText.tag_configure(tag_name, foreground=text_color, font=("Arial", 10, font_weight))
+        outputText.tag_configure(tag_name, foreground=text_color, font=("Arial", font_size, font_weight))
     
     outputText.insert(tkinter.END, "\n", ())
     outputText.insert(tkinter.END, text, (tag_name,))
