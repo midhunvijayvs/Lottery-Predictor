@@ -330,7 +330,7 @@ elif platform_type == "Android":
     serial_number_entry.place(x=400, y=550)
         
     update_pdf_button.place(x=20,y=650)
-    analyze_button.place(x=600,y=600)
+    analyze_button.place(x=550,y=650)
     show_last_result_button.place(x=900,y=650)
     clear_screen_button.place(x=20,y=800)
     settings_button.place(x=600,y=800)
