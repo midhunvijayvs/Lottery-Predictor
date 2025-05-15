@@ -4,6 +4,7 @@ import tkinter.messagebox
 from tkinter import *
 from PIL import Image
 from PIL import ImageTk
+import webbrowser
 from FunctionsModule import (
    set_logger,
    delete_all_pdfs,
@@ -66,6 +67,11 @@ clear_screen_button = tkinter.Button(mainWindow)
 settings_button = tkinter.Button(mainWindow)
 
 
+link = tkinter.Label(mainWindow,
+                text=">>> Goto Kerala Lottery Result official page",
+                fg="blue",
+                cursor="hand2",
+                font=("Segoe UI", 10, "underline"))
 
 
 
@@ -289,6 +295,8 @@ def openSettingsWindow():
    R3 = Radiobutton(settingsWindow, text="5th Prize Analyze", variable=var, value=3, command=radioSelected)
    R3.pack(anchor = settingsWindow)
 
+def open_link(event=None):
+    webbrowser.open("https://www.statelottery.kerala.gov.in/index.php/lottery-result-view")
 
 
 
@@ -311,6 +319,8 @@ if platform_type == "Windows":
     show_last_result_button.place(x=300,y=400)
     clear_screen_button.place(x=20,y=550)
     settings_button.place(x=600,y=550)
+    
+    link.place(x=20,y=700)
     
     outputText.pack(side=tkinter.RIGHT, fill=tkinter.Y)
     outputScrollBar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
@@ -335,8 +345,10 @@ elif platform_type == "Android":
     clear_screen_button.place(x=20,y=800)
     settings_button.place(x=600,y=800)
     
-    outputText.place(x=20, y=950, width=1300, height=1000)
-    outputScrollBar.place(x=1320, y=950, height=1000)
+    link.place(x=20,y=950)
+    
+    outputText.place(x=20, y=1100, width=1300, height=1000)
+    outputScrollBar.place(x=1320, y=1100, height=1000)
 else:
     print("Platform not recognized:", platform_type)
     
@@ -359,6 +371,8 @@ clear_screen_button.config(text="Clear Screen", command=clear_output_screen, bg=
 settings_button.config(text="Settings", command=openSettingsWindow, bg="#666666")
 
 
+
+link.bind("<Button-1>", open_link)
 
 
 
