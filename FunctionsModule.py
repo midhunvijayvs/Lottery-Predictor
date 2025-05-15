@@ -5,6 +5,12 @@ import sys
 import glob
 import requests
 from itertools import product
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+import tkinter as tk
+from tkinter import Toplevel
 #*******************************************************************************
 # Function to get the platform type
 def get_platform():
@@ -367,3 +373,39 @@ def generate_positional_combinations(list1, list2):
 
 #**********************other functions***********************
 
+def show_digit_plots(Dig0Result, Dig1Result, Dig2Result, Dig3Result):
+    # Create a new Toplevel window
+    plot_window = Toplevel()
+    plot_window.title("Digit Analysis Plots")
+    plot_window.geometry("1000x800")
+    plot_window.configure(bg='#222222')  # Dark background
+     
+    # Prepare the figure
+    fig = Figure(figsize=(10, 6), facecolor='#222222')  # Dark figure background
+    axs = fig.subplots(2, 2)
+    
+    digit_data = [Dig3Result, Dig2Result, Dig1Result, Dig0Result]
+    titles = ['Thousands (D3)', 'Hundreds (D2)', 'Tens (D1)', 'Units (D0)']
+
+    # Determine max value for y-axis ticks
+    max_value = max(max(data) for data in digit_data)
+
+    for i, ax in enumerate(axs.flat):
+        ax.bar(range(10), digit_data[i], color='green')
+        ax.set_title(titles[i], color='white')
+        ax.set_xlabel("Digit (0-9)", color='white')
+        ax.set_ylabel("Count", color='white')
+        ax.set_xticks(range(0, 10, 1))  # Y ticks every 100 units
+        ax.set_yticks(range(0, max_value + 100, 100))  # Y ticks every 100 units
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+
+        # Set axes background to dark
+        ax.set_facecolor('#333333')  # Darker panel background
+        
+    fig.tight_layout()
+
+    # Embed plot in the Toplevel window
+    canvas = FigureCanvasTkAgg(fig, master=plot_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(fill="both", expand=True)

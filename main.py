@@ -21,7 +21,8 @@ from FunctionsModule import (
  find_most_frequent_digits,
  find_second_most_frequent_digits,
  generate_positional_combinations,
- get_platform
+ get_platform,
+ show_digit_plots
  )
 
 
@@ -186,6 +187,8 @@ def analyze_and_show():
    mostRepeatedDigits=find_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
    secondMostRepeatedDigits=find_second_most_frequent_digits(Dig3Result, Dig2Result, Dig1Result, Dig0Result)
    
+   
+   show_digit_plots(Dig0Result, Dig1Result, Dig2Result, Dig3Result)
    
    
   
